@@ -2,18 +2,28 @@
 
 import React, { useEffect, useState } from 'react';
 import Logo from './ui/Logo';
+import { Lang, translations } from '@/lib/translations';
 
 interface LandingHeroProps {
   onStart: () => void;
+  lang: Lang;
+  onToggleLang: () => void;
 }
 
-export default function LandingHero({ onStart }: LandingHeroProps) {
+export default function LandingHero({ onStart, lang, onToggleLang }: LandingHeroProps) {
   const [visible, setVisible] = useState(false);
+  const T = translations[lang];
 
   useEffect(() => {
     const t = setTimeout(() => setVisible(true), 100);
     return () => clearTimeout(t);
   }, []);
+
+  const stats = [
+    { value: '5', label: T.questions },
+    { value: '<3', label: T.minutes },
+    { value: '11', label: T.businessAreas },
+  ];
 
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center px-6 overflow-hidden">
@@ -27,18 +37,11 @@ export default function LandingHero({ onStart }: LandingHeroProps) {
         }}
         aria-hidden="true"
       />
-
-      {/* Top radial */}
       <div
         className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] opacity-20 pointer-events-none"
-        style={{
-          background:
-            'radial-gradient(ellipse at center top, rgba(196,151,59,0.4) 0%, transparent 70%)',
-        }}
+        style={{ background: 'radial-gradient(ellipse at center top, rgba(196,151,59,0.4) 0%, transparent 70%)' }}
         aria-hidden="true"
       />
-
-      {/* Floating orbs */}
       <div
         className="absolute top-1/4 right-[8%] w-48 h-48 rounded-full opacity-[0.06] blur-3xl"
         style={{ background: 'radial-gradient(circle, #C4973B, transparent)' }}
@@ -56,11 +59,18 @@ export default function LandingHero({ onStart }: LandingHeroProps) {
         style={{ borderBottom: '1px solid rgba(196,151,59,0.08)' }}
       >
         <Logo size="sm" />
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-xs font-body text-gray-400 tracking-wider">
-            Diagnostic Platform
-          </span>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={onToggleLang}
+            className="text-xs font-body font-semibold px-3 py-1.5 rounded-full transition-all duration-200 hover:scale-105"
+            style={{ background: 'rgba(196,151,59,0.1)', border: '1px solid rgba(196,151,59,0.3)', color: '#C4973B' }}
+          >
+            {T.langButton}
+          </button>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-xs font-body text-gray-400 tracking-wider">{T.diagnosticPlatform}</span>
+          </div>
         </div>
       </div>
 
@@ -77,25 +87,18 @@ export default function LandingHero({ onStart }: LandingHeroProps) {
         <div className="inline-flex items-center gap-2 mb-8">
           <div
             className="flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-body font-medium tracking-wider"
-            style={{
-              background: 'rgba(196,151,59,0.1)',
-              border: '1px solid rgba(196,151,59,0.25)',
-              color: '#D4A94B',
-            }}
+            style={{ background: 'rgba(196,151,59,0.1)', border: '1px solid rgba(196,151,59,0.25)', color: '#D4A94B' }}
           >
             <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
               <circle cx="6" cy="6" r="5" stroke="#D4A94B" strokeWidth="1" />
               <path d="M4 6l1.5 1.5L8 4" stroke="#D4A94B" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            STRATEGIC INTELLIGENCE PLATFORM
+            {T.badge}
           </div>
         </div>
 
         {/* Headline */}
-        <h1
-          className="font-display font-bold leading-[1.1] mb-6"
-          style={{ fontSize: 'clamp(2.4rem, 5vw, 3.8rem)' }}
-        >
+        <h1 className="font-display font-bold leading-[1.1] mb-6" style={{ fontSize: 'clamp(2.4rem, 5vw, 3.8rem)' }}>
           <span
             style={{
               background: 'linear-gradient(135deg, #FFFFFF 0%, #D0D0D0 100%)',
@@ -104,11 +107,9 @@ export default function LandingHero({ onStart }: LandingHeroProps) {
               backgroundClip: 'text',
             }}
           >
-            Uncover the Real{' '}
+            {T.headline1}{' '}
           </span>
-          <span className="text-gold-shimmer">
-            Bottleneck
-          </span>
+          <span className="text-gold-shimmer">{T.highlight}</span>
           <br />
           <span
             style={{
@@ -118,7 +119,7 @@ export default function LandingHero({ onStart }: LandingHeroProps) {
               backgroundClip: 'text',
             }}
           >
-            in Your Business.
+            {T.headline2}
           </span>
         </h1>
 
@@ -127,17 +128,12 @@ export default function LandingHero({ onStart }: LandingHeroProps) {
           className="font-body font-light text-gray-400 leading-relaxed mb-12 mx-auto"
           style={{ fontSize: 'clamp(1rem, 2vw, 1.2rem)', maxWidth: '580px' }}
         >
-          Answer 5 strategic questions and receive a precision diagnostic identifying your
-          company&apos;s primary growth constraint — with an executive action plan.
+          {T.subtitle}
         </p>
 
-        {/* Stats row */}
+        {/* Stats */}
         <div className="flex items-center justify-center gap-10 mb-12">
-          {[
-            { value: '5', label: 'Questions' },
-            { value: '<3', label: 'Minutes' },
-            { value: '11', label: 'Business Areas' },
-          ].map(({ value, label }) => (
+          {stats.map(({ value, label }) => (
             <div key={label} className="text-center">
               <div
                 className="font-display font-bold text-2xl mb-0.5"
@@ -164,57 +160,25 @@ export default function LandingHero({ onStart }: LandingHeroProps) {
             color: '#07070F',
             boxShadow: '0 0 0 0 rgba(196,151,59,0.4), 0 8px 32px rgba(196,151,59,0.3)',
           }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.boxShadow =
-              '0 0 0 6px rgba(196,151,59,0.15), 0 12px 48px rgba(196,151,59,0.4)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.boxShadow =
-              '0 0 0 0 rgba(196,151,59,0.4), 0 8px 32px rgba(196,151,59,0.3)';
-          }}
+          onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 0 0 6px rgba(196,151,59,0.15), 0 12px 48px rgba(196,151,59,0.4)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.boxShadow = '0 0 0 0 rgba(196,151,59,0.4), 0 8px 32px rgba(196,151,59,0.3)'; }}
         >
-          <span>BEGIN DIAGNOSTIC</span>
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-            fill="none"
-            className="transition-transform duration-300 group-hover:translate-x-1"
-          >
-            <path
-              d="M3 8h10M9 4l4 4-4 4"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
+          <span>{T.beginDiagnostic}</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="transition-transform duration-300 group-hover:translate-x-1">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
 
-        {/* Trust signal */}
-        <p className="mt-6 text-xs font-body text-gray-600 tracking-wide">
-          Trusted by growth-stage companies across 12 industries
-        </p>
+        <p className="mt-6 text-xs font-body text-gray-600 tracking-wide">{T.trust}</p>
       </div>
 
-      {/* Bottom gradient */}
       <div
         className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none"
         style={{ background: 'linear-gradient(to top, #07070F, transparent)' }}
         aria-hidden="true"
       />
-
-      {/* Decorative lines */}
-      <div
-        className="absolute left-0 top-1/2 -translate-y-1/2 w-32 h-px opacity-30"
-        style={{ background: 'linear-gradient(90deg, transparent, rgba(196,151,59,0.6))' }}
-        aria-hidden="true"
-      />
-      <div
-        className="absolute right-0 top-1/2 -translate-y-1/2 w-32 h-px opacity-30"
-        style={{ background: 'linear-gradient(270deg, transparent, rgba(196,151,59,0.6))' }}
-        aria-hidden="true"
-      />
+      <div className="absolute left-0 top-1/2 -translate-y-1/2 w-32 h-px opacity-30" style={{ background: 'linear-gradient(90deg, transparent, rgba(196,151,59,0.6))' }} aria-hidden="true" />
+      <div className="absolute right-0 top-1/2 -translate-y-1/2 w-32 h-px opacity-30" style={{ background: 'linear-gradient(270deg, transparent, rgba(196,151,59,0.6))' }} aria-hidden="true" />
     </div>
   );
 }
