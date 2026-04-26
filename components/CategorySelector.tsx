@@ -3,10 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import { categories } from '@/lib/diagnosticData';
 import Logo from './ui/Logo';
+import { Lang, translations } from '@/lib/translations';
 
 interface CategorySelectorProps {
   onSelect: (categoryId: string) => void;
   onBack: () => void;
+  lang: Lang;
+  onToggleLang: () => void;
 }
 
 const CATEGORY_ICONS: Record<string, React.ReactNode> = {
@@ -67,9 +70,10 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   ),
 };
 
-export default function CategorySelector({ onSelect, onBack }: CategorySelectorProps) {
+export default function CategorySelector({ onSelect, onBack, lang, onToggleLang }: CategorySelectorProps) {
   const [visible, setVisible] = useState(false);
   const [hovered, setHovered] = useState<string | null>(null);
+  const T = translations[lang];
 
   useEffect(() => {
     const t = setTimeout(() => setVisible(true), 80);
@@ -78,7 +82,6 @@ export default function CategorySelector({ onSelect, onBack }: CategorySelectorP
 
   return (
     <div className="relative min-h-screen px-6 py-8 overflow-y-auto">
-      {/* Background */}
       <div
         className="fixed inset-0 opacity-[0.025]"
         style={{
@@ -92,22 +95,27 @@ export default function CategorySelector({ onSelect, onBack }: CategorySelectorP
       {/* Header */}
       <div
         className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-5"
-        style={{
-          background: 'rgba(7,7,15,0.9)',
-          backdropFilter: 'blur(12px)',
-          borderBottom: '1px solid rgba(196,151,59,0.08)',
-        }}
+        style={{ background: 'rgba(7,7,15,0.9)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(196,151,59,0.08)' }}
       >
         <Logo size="sm" />
-        <button
-          onClick={onBack}
-          className="flex items-center gap-2 text-xs font-body text-gray-500 hover:text-gold transition-colors"
-        >
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-            <path d="M11 7H3M6 4L3 7l3 3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          Back
-        </button>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={onToggleLang}
+            className="text-xs font-body font-semibold px-3 py-1.5 rounded-full transition-all duration-200 hover:scale-105"
+            style={{ background: 'rgba(196,151,59,0.1)', border: '1px solid rgba(196,151,59,0.3)', color: '#C4973B' }}
+          >
+            {T.langButton}
+          </button>
+          <button
+            onClick={onBack}
+            className="flex items-center gap-2 text-xs font-body text-gray-500 hover:text-gold transition-colors"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M11 7H3M6 4L3 7l3 3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            {T.back}
+          </button>
+        </div>
       </div>
 
       <div
@@ -118,13 +126,9 @@ export default function CategorySelector({ onSelect, onBack }: CategorySelectorP
           transition: 'opacity 0.6s ease, transform 0.6s ease',
         }}
       >
-        {/* Section header */}
         <div className="text-center mb-12">
-          <p
-            className="text-xs font-body font-medium tracking-[0.25em] uppercase mb-4"
-            style={{ color: '#C4973B' }}
-          >
-            Step 1 of 2
+          <p className="text-xs font-body font-medium tracking-[0.25em] uppercase mb-4" style={{ color: '#C4973B' }}>
+            {T.step1of2}
           </p>
           <h2
             className="font-display font-bold leading-tight mb-4"
@@ -136,19 +140,15 @@ export default function CategorySelector({ onSelect, onBack }: CategorySelectorP
               backgroundClip: 'text',
             }}
           >
-            What is the primary challenge
-            <br />your company is facing?
+            {T.categoryQuestion1}
+            <br />
+            {T.categoryQuestion2}
           </h2>
-          <p className="text-sm font-body text-gray-500 max-w-md mx-auto leading-relaxed">
-            Select the area that most closely reflects your current strategic concern.
-            Your selection will guide the diagnostic.
-          </p>
+          <p className="text-sm font-body text-gray-500 max-w-md mx-auto leading-relaxed">{T.categorySubtitle}</p>
         </div>
 
-        {/* Gold divider */}
         <div className="gold-divider mb-12" />
 
-        {/* Category grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {categories.map((cat, i) => (
             <button
@@ -158,51 +158,32 @@ export default function CategorySelector({ onSelect, onBack }: CategorySelectorP
               onMouseLeave={() => setHovered(null)}
               className="relative text-left p-6 rounded-2xl transition-all duration-300"
               style={{
-                background:
-                  hovered === cat.id
-                    ? 'rgba(196,151,59,0.08)'
-                    : 'rgba(19,19,30,0.7)',
-                border:
-                  hovered === cat.id
-                    ? '1px solid rgba(196,151,59,0.4)'
-                    : '1px solid rgba(196,151,59,0.12)',
-                boxShadow:
-                  hovered === cat.id
-                    ? '0 8px 32px rgba(196,151,59,0.12), 0 0 0 1px rgba(196,151,59,0.2)'
-                    : '0 2px 16px rgba(0,0,0,0.3)',
+                background: hovered === cat.id ? 'rgba(196,151,59,0.08)' : 'rgba(19,19,30,0.7)',
+                border: hovered === cat.id ? '1px solid rgba(196,151,59,0.4)' : '1px solid rgba(196,151,59,0.12)',
+                boxShadow: hovered === cat.id ? '0 8px 32px rgba(196,151,59,0.12), 0 0 0 1px rgba(196,151,59,0.2)' : '0 2px 16px rgba(0,0,0,0.3)',
                 transform: hovered === cat.id ? 'translateY(-2px)' : 'translateY(0)',
                 opacity: visible ? 1 : 0,
                 animationDelay: `${i * 40}ms`,
                 backdropFilter: 'blur(8px)',
               }}
             >
-              {/* Icon */}
               <div
                 className="w-10 h-10 rounded-xl flex items-center justify-center mb-4 transition-colors duration-300"
                 style={{
-                  background:
-                    hovered === cat.id
-                      ? 'rgba(196,151,59,0.2)'
-                      : 'rgba(196,151,59,0.08)',
+                  background: hovered === cat.id ? 'rgba(196,151,59,0.2)' : 'rgba(196,151,59,0.08)',
                   color: hovered === cat.id ? '#D4A94B' : '#8A7840',
                   border: '1px solid rgba(196,151,59,0.15)',
                 }}
               >
                 {CATEGORY_ICONS[cat.id]}
               </div>
-
-              {/* Text */}
               <h3
                 className="font-body font-semibold text-sm mb-1.5 transition-colors duration-300"
                 style={{ color: hovered === cat.id ? '#F5F5F0' : '#C8C8D0' }}
               >
                 {cat.label}
               </h3>
-              <p className="text-xs font-body text-gray-600 leading-snug">
-                {cat.description}
-              </p>
-
-              {/* Arrow */}
+              <p className="text-xs font-body text-gray-600 leading-snug">{cat.description}</p>
               <div
                 className="absolute bottom-5 right-5 transition-all duration-300"
                 style={{
@@ -215,14 +196,10 @@ export default function CategorySelector({ onSelect, onBack }: CategorySelectorP
                   <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
-
-              {/* Hover glow corner */}
               {hovered === cat.id && (
                 <div
                   className="absolute top-0 right-0 w-24 h-24 pointer-events-none rounded-2xl"
-                  style={{
-                    background: 'radial-gradient(circle at top right, rgba(196,151,59,0.12), transparent 70%)',
-                  }}
+                  style={{ background: 'radial-gradient(circle at top right, rgba(196,151,59,0.12), transparent 70%)' }}
                 />
               )}
             </button>
