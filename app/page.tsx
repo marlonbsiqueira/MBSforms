@@ -4,20 +4,21 @@ import React, { useState, useCallback } from 'react';
 import LandingHero from '@/components/LandingHero';
 import CategorySelector from '@/components/CategorySelector';
 import QuestionFlow from '@/components/QuestionFlow';
-import FinalReport from '@/components/FinalReport';
+import LeadCaptureForm from '@/components/LeadCaptureForm';
 import { categories } from '@/lib/diagnosticData';
 import { generateReport, DiagnosticReport } from '@/lib/reportGenerator';
+import { Lang } from '@/lib/translations';
 
-type Step = 'landing' | 'category' | 'questions' | 'report';
+type Step = 'landing' | 'category' | 'questions' | 'lead';
 
 export default function Home() {
   const [step, setStep] = useState<Step>('landing');
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [report, setReport] = useState<DiagnosticReport | null>(null);
+  const [lang, setLang] = useState<Lang>('en');
 
-  const handleStart = useCallback(() => {
-    setStep('category');
-  }, []);
+  const toggleLang = useCallback(() => setLang((l) => (l === 'en' ? 'pt' : 'en')), []);
+  const handleStart = useCallback(() => setStep('category'), []);
 
   const handleCategorySelect = useCallback((categoryId: string) => {
     setSelectedCategoryId(categoryId);
@@ -29,7 +30,7 @@ export default function Home() {
       if (!selectedCategoryId) return;
       const r = generateReport(selectedCategoryId, answers);
       setReport(r);
-      setStep('report');
+      setStep('lead');
     },
     [selectedCategoryId]
   );
@@ -46,22 +47,17 @@ export default function Home() {
 
   return (
     <main>
-      {step === 'landing' && <LandingHero onStart={handleStart} />}
+      {step === 'landing' && (
+        <LandingHero onStart={handleStart} lang={lang} onToggleLang={toggleLang} />
+      )}
       {step === 'category' && (
-        <CategorySelector
-          onSelect={handleCategorySelect}
-          onBack={handleRestart}
-        />
+        <CategorySelector onSelect={handleCategorySelect} onBack={handleRestart} lang={lang} onToggleLang={toggleLang} />
       )}
       {step === 'questions' && selectedCategory && (
-        <QuestionFlow
-          category={selectedCategory}
-          onComplete={handleQuestionsComplete}
-          onBack={() => setStep('category')}
-        />
+        <QuestionFlow category={selectedCategory} onComplete={handleQuestionsComplete} onBack={() => setStep('category')} lang={lang} onToggleLang={toggleLang} />
       )}
-      {step === 'report' && report && (
-        <FinalReport report={report} onRestart={handleRestart} />
+      {step === 'lead' && report && (
+        <LeadCaptureForm report={report} onRestart={handleRestart} lang={lang} onToggleLang={toggleLang} />
       )}
     </main>
   );
