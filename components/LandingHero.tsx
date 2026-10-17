@@ -146,7 +146,7 @@ export default function LandingHero({ onStart, lang, onToggleLang }: LandingHero
               >
                 {value}
               </div>
-              <div className="text-xs font-body text-gray-500 tracking-wider uppercase">{label}</div>
+              <div className="text-xs font-body text-gray-400 tracking-wider uppercase">{label}</div>
             </div>
           ))}
         </div>
@@ -169,7 +169,7 @@ export default function LandingHero({ onStart, lang, onToggleLang }: LandingHero
           </svg>
         </button>
 
-        <p className="mt-6 text-xs font-body text-gray-600 tracking-wide">{T.trust}</p>
+        <p className="mt-6 text-xs font-body text-gray-400/90 tracking-wide">{T.trust}</p>
       </div>
 
       <div

@@ -1,5 +1,24 @@
 import type { Metadata, Viewport } from 'next';
+import localFont from 'next/font/local';
 import './globals.css';
+
+// Self-hosted variable fonts (latin subset covers PT diacritics): no request
+// to Google, preloaded, and next/font adds a metric-matched fallback so the
+// text doesn't jump when the font arrives.
+const inter = localFont({
+  src: './fonts/inter-latin-wght-normal.woff2',
+  weight: '300 600',
+  display: 'swap',
+  variable: '--font-inter',
+});
+const playfair = localFont({
+  src: [
+    { path: './fonts/playfair-display-latin-wght-normal.woff2', weight: '400 700', style: 'normal' },
+    { path: './fonts/playfair-display-latin-wght-italic.woff2', weight: '400 700', style: 'italic' },
+  ],
+  display: 'swap',
+  variable: '--font-playfair',
+});
 
 const SITE_URL = 'https://marlonbsiqueira.github.io/MBSforms/';
 
@@ -33,19 +52,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400&family=Inter:wght@300..600&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html lang="en" className={`dark ${inter.variable} ${playfair.variable}`}>
       <body className="bg-navy text-gray-100 antialiased overflow-x-hidden">
         <div className="ambient-glow" aria-hidden="true" />
         {children}
