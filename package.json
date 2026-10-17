@@ -1,5 +1,5 @@
 {
-  "name": "mbsa-advisory-diagnostic",
+  "name": "mbs-advisory-diagnostic",
   "version": "1.0.0",
   "private": true,
   "scripts": {
