@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import emailjs from '@emailjs/browser';
 import { DiagnosticReport, getSeverityColor, getSeverityBg } from '@/lib/reportGenerator';
 import { Lang, translations } from '@/lib/translations';
-import { EMAIL_CONFIG } from '@/lib/emailConfig';
+import { EMAIL_CONFIG, WEB3FORMS_ACCESS_KEY, CONTACT_EMAIL } from '@/lib/emailConfig';
 import Logo from './ui/Logo';
 
 interface LeadCaptureFormProps {
@@ -19,7 +19,7 @@ export default function LeadCaptureForm({ report, onRestart, lang, onToggleLang 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
-  const [errorDetail, setErrorDetail] = useState<string>('');
+  const [honey, setHoney] = useState(''); // spam trap — real visitors never see it
 
   const { template, category, totalScore, answers } = report;
   const severityColor = getSeverityColor(template.severity);
@@ -38,33 +38,47 @@ export default function LeadCaptureForm({ report, onRestart, lang, onToggleLang 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !email.trim()) return;
+    if (honey) { setStatus('success'); return; } // bot: pretend it worked
     setStatus('sending');
 
     const actionsText = template.actions.map((a, i) => `${i + 1}. ${a}`).join('\n');
+    const fields = {
+      from_name: name,
+      from_email: email,
+      category: category.label,
+      score_pct: `${scorePct}%`,
+      total_score: `${totalScore}/20`,
+      severity: template.severity,
+      headline: template.headline,
+      summary: template.summary,
+      leakage: template.leakage,
+      actions: actionsText,
+      answers_detail: buildAnswersDetail(),
+    };
 
     try {
-      await emailjs.send(
-        EMAIL_CONFIG.SERVICE_ID,
-        EMAIL_CONFIG.TEMPLATE_ID,
-        {
-          from_name: name,
-          from_email: email,
-          category: category.label,
-          score_pct: `${scorePct}%`,
-          total_score: `${totalScore}/20`,
-          severity: template.severity,
-          headline: template.headline,
-          summary: template.summary,
-          leakage: template.leakage,
-          actions: actionsText,
-          answers_detail: buildAnswersDetail(),
-        },
-        EMAIL_CONFIG.PUBLIC_KEY
-      );
+      if (WEB3FORMS_ACCESS_KEY) {
+        const res = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({
+            access_key: WEB3FORMS_ACCESS_KEY,
+            subject: `Diagnostic: ${category.label} · ${template.severity} (${scorePct}%) — ${name}`,
+            ...fields,
+            from_name: `MBS Diagnostic — ${name}`,
+            name,
+            email, // lets you reply straight to the lead
+          }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || !data.success) throw new Error(data.message || `HTTP ${res.status}`);
+      } else {
+        await emailjs.send(EMAIL_CONFIG.SERVICE_ID, EMAIL_CONFIG.TEMPLATE_ID, fields, EMAIL_CONFIG.PUBLIC_KEY);
+      }
       setStatus('success');
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      setErrorDetail(String(err?.text || err?.message || err || 'Unknown error'));
+    } catch (err) {
+      // technical details stay in the console, not in front of the visitor
+      console.error('Diagnostic submission failed:', err);
       setStatus('error');
     }
   };
@@ -196,10 +210,13 @@ export default function LeadCaptureForm({ report, onRestart, lang, onToggleLang 
 
             {/* Name */}
             <div className="mb-5">
-              <label className="block text-xs font-body font-medium tracking-wider uppercase text-gray-500 mb-2">
+              <label htmlFor="lead-name" className="block text-xs font-body font-medium tracking-wider uppercase text-gray-500 mb-2">
                 {T.fullName}
               </label>
               <input
+                id="lead-name"
+                name="name"
+                autoComplete="name"
                 type="text"
                 required
                 value={name}
@@ -220,10 +237,13 @@ export default function LeadCaptureForm({ report, onRestart, lang, onToggleLang 
 
             {/* Email */}
             <div className="mb-6">
-              <label className="block text-xs font-body font-medium tracking-wider uppercase text-gray-500 mb-2">
+              <label htmlFor="lead-email" className="block text-xs font-body font-medium tracking-wider uppercase text-gray-500 mb-2">
                 {T.emailLabel}
               </label>
               <input
+                id="lead-email"
+                name="email"
+                autoComplete="email"
                 type="email"
                 required
                 value={email}
@@ -242,6 +262,17 @@ export default function LeadCaptureForm({ report, onRestart, lang, onToggleLang 
               />
             </div>
 
+            <input
+              type="text"
+              name="company_website"
+              value={honey}
+              onChange={(e) => setHoney(e.target.value)}
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+              style={{ position: 'absolute', left: '-9999px' }}
+            />
+
             {/* Submit */}
             <button
               type="submit"
@@ -257,9 +288,11 @@ export default function LeadCaptureForm({ report, onRestart, lang, onToggleLang 
             </button>
 
             {status === 'error' && (
-              <div className="mt-3 text-center">
+              <div className="mt-3 text-center" role="alert">
                 <p className="text-xs text-red-400">{T.errorMsg}</p>
-                {errorDetail && <p className="text-xs text-red-300 mt-1 opacity-70 break-all">{errorDetail}</p>}
+                <a href={`mailto:${CONTACT_EMAIL}`} className="text-xs text-red-300 mt-1 underline underline-offset-2 inline-block">
+                  {CONTACT_EMAIL}
+                </a>
               </div>
             )}
           </div>
