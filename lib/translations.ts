@@ -39,6 +39,7 @@ export const translations = {
     anotherDiagnostic: 'Run another diagnostic',
     privacy: 'We respect your privacy. Your information will never be shared with third parties.',
     errorMsg: 'Something went wrong. Please try again or contact us directly.',
+    severity: { Low: 'Low Risk', Moderate: 'Moderate Risk', High: 'High Risk', Critical: 'Critical Risk' },
   },
   pt: {
     langButton: 'EN',
@@ -78,5 +79,6 @@ export const translations = {
     anotherDiagnostic: 'Realizar outro diagnóstico',
     privacy: 'Respeitamos sua privacidade. Suas informações nunca serão compartilhadas com terceiros.',
     errorMsg: 'Algo deu errado. Por favor, tente novamente ou entre em contato diretamente.',
+    severity: { Low: 'Risco Baixo', Moderate: 'Risco Moderado', High: 'Risco Alto', Critical: 'Risco Crítico' },
   },
 };

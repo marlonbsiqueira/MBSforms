@@ -87,7 +87,7 @@ export default function QuestionFlow({ category, onComplete, onBack, lang, onTog
           </button>
           <button
             onClick={onBack}
-            className="flex items-center gap-2 text-xs font-body text-gray-500 hover:text-gold transition-colors"
+            className="flex items-center gap-2 text-xs font-body text-gray-400 hover:text-gold transition-colors"
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M11 7H3M6 4L3 7l3 3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
@@ -104,7 +104,7 @@ export default function QuestionFlow({ category, onComplete, onBack, lang, onTog
             <span className="text-xs font-body font-medium tracking-wider uppercase" style={{ color: '#C4973B' }}>
               {category.label}
             </span>
-            <span className="text-xs font-body text-gray-600">{T.step2of2}</span>
+            <span className="text-xs font-body text-gray-400/90">{T.step2of2}</span>
           </div>
           <ProgressBar current={currentQ + 1} total={category.questions.length} label={T.questionLabel} />
         </div>
@@ -197,7 +197,7 @@ export default function QuestionFlow({ category, onComplete, onBack, lang, onTog
         </div>
 
         {selected === null && (
-          <p className="text-center text-xs font-body text-gray-700 mt-8">{T.selectHint}</p>
+          <p className="text-center text-xs font-body text-gray-400/80 mt-8">{T.selectHint}</p>
         )}
         {selected !== null && !isLast && (
           <p className="text-center text-xs font-body mt-8" style={{ color: '#C4973B' }}>{T.loadingNext}</p>

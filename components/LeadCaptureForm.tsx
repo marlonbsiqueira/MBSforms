@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import emailjs from '@emailjs/browser';
 import { DiagnosticReport, getSeverityColor, getSeverityBg } from '@/lib/reportGenerator';
 import { Lang, translations } from '@/lib/translations';
-import { EMAIL_CONFIG, WEB3FORMS_ACCESS_KEY, CONTACT_EMAIL } from '@/lib/emailConfig';
+import { WEB3FORMS_ACCESS_KEY, CONTACT_EMAIL } from '@/lib/emailConfig';
+import { localizeCategory } from '@/lib/diagnosticData.pt';
 import Logo from './ui/Logo';
 
 interface LeadCaptureFormProps {
@@ -54,27 +54,25 @@ export default function LeadCaptureForm({ report, onRestart, lang, onToggleLang 
       leakage: template.leakage,
       actions: actionsText,
       answers_detail: buildAnswersDetail(),
+      language: lang === 'pt' ? 'Português' : 'English', // the language the visitor used
     };
 
     try {
-      if (WEB3FORMS_ACCESS_KEY) {
-        const res = await fetch('https://api.web3forms.com/submit', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-          body: JSON.stringify({
-            access_key: WEB3FORMS_ACCESS_KEY,
-            subject: `Diagnostic: ${category.label} · ${template.severity} (${scorePct}%) — ${name}`,
-            ...fields,
-            from_name: `MBS Diagnostic — ${name}`,
-            name,
-            email, // lets you reply straight to the lead
-          }),
-        });
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok || !data.success) throw new Error(data.message || `HTTP ${res.status}`);
-      } else {
-        await emailjs.send(EMAIL_CONFIG.SERVICE_ID, EMAIL_CONFIG.TEMPLATE_ID, fields, EMAIL_CONFIG.PUBLIC_KEY);
-      }
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_ACCESS_KEY,
+          subject: `Diagnostic: ${category.label} · ${template.severity} (${scorePct}%) — ${name}`,
+          ...fields,
+          from_name: `MBS Diagnostic — ${name}`,
+          name,
+          email, // lets you reply straight to the lead
+        }),
+        signal: AbortSignal.timeout?.(20000), // never hang on "Sending…"
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.success) throw new Error(data.message || `HTTP ${res.status}`);
       setStatus('success');
     } catch (err) {
       // technical details stay in the console, not in front of the visitor
@@ -108,7 +106,7 @@ export default function LeadCaptureForm({ report, onRestart, lang, onToggleLang 
           <p className="font-body text-gray-400 leading-relaxed mb-8 max-w-sm mx-auto">{T.successMsg}</p>
           <button
             onClick={onRestart}
-            className="text-xs font-body text-gray-600 hover:text-gold transition-colors underline underline-offset-2"
+            className="text-xs font-body text-gray-400/90 hover:text-gold transition-colors underline underline-offset-2"
           >
             {T.anotherDiagnostic}
           </button>
@@ -150,7 +148,7 @@ export default function LeadCaptureForm({ report, onRestart, lang, onToggleLang 
           </button>
           <button
             onClick={onRestart}
-            className="flex items-center gap-2 text-xs font-body text-gray-500 hover:text-gold transition-colors"
+            className="flex items-center gap-2 text-xs font-body text-gray-400 hover:text-gold transition-colors"
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M2 7a5 5 0 1 1 1 3M2 7V3M2 7H6" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
@@ -198,19 +196,19 @@ export default function LeadCaptureForm({ report, onRestart, lang, onToggleLang 
                 className="text-xs font-body px-3 py-1 rounded-full"
                 style={{ background: 'rgba(196,151,59,0.1)', border: '1px solid rgba(196,151,59,0.2)', color: '#C4973B' }}
               >
-                {category.label}
+                {localizeCategory(category, lang).label}
               </span>
               <span
                 className="text-xs font-body px-3 py-1 rounded-full"
                 style={{ background: severityBg, border: `1px solid ${severityColor}44`, color: severityColor }}
               >
-                {template.severity} Risk · {scorePct}%
+                {T.severity[template.severity]} · {scorePct}%
               </span>
             </div>
 
             {/* Name */}
             <div className="mb-5">
-              <label htmlFor="lead-name" className="block text-xs font-body font-medium tracking-wider uppercase text-gray-500 mb-2">
+              <label htmlFor="lead-name" className="block text-xs font-body font-medium tracking-wider uppercase text-gray-400 mb-2">
                 {T.fullName}
               </label>
               <input
@@ -222,7 +220,7 @@ export default function LeadCaptureForm({ report, onRestart, lang, onToggleLang 
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder={T.fullNamePlaceholder}
-                className="w-full px-4 py-3 rounded-xl text-sm font-body text-gray-200 placeholder-gray-600 outline-none transition-all duration-200"
+                className="w-full px-4 py-3 rounded-xl text-sm font-body text-gray-200 placeholder-gray-500 outline-none transition-all duration-200"
                 style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(196,151,59,0.2)' }}
                 onFocus={(e) => {
                   e.target.style.border = '1px solid rgba(196,151,59,0.5)';
@@ -237,7 +235,7 @@ export default function LeadCaptureForm({ report, onRestart, lang, onToggleLang 
 
             {/* Email */}
             <div className="mb-6">
-              <label htmlFor="lead-email" className="block text-xs font-body font-medium tracking-wider uppercase text-gray-500 mb-2">
+              <label htmlFor="lead-email" className="block text-xs font-body font-medium tracking-wider uppercase text-gray-400 mb-2">
                 {T.emailLabel}
               </label>
               <input
@@ -249,7 +247,7 @@ export default function LeadCaptureForm({ report, onRestart, lang, onToggleLang 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder={T.emailPlaceholder}
-                className="w-full px-4 py-3 rounded-xl text-sm font-body text-gray-200 placeholder-gray-600 outline-none transition-all duration-200"
+                className="w-full px-4 py-3 rounded-xl text-sm font-body text-gray-200 placeholder-gray-500 outline-none transition-all duration-200"
                 style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(196,151,59,0.2)' }}
                 onFocus={(e) => {
                   e.target.style.border = '1px solid rgba(196,151,59,0.5)';
@@ -297,7 +295,7 @@ export default function LeadCaptureForm({ report, onRestart, lang, onToggleLang 
             )}
           </div>
 
-          <p className="text-center text-xs font-body text-gray-700 leading-relaxed px-4">{T.privacy}</p>
+          <p className="text-center text-xs font-body text-gray-400/80 leading-relaxed px-4">{T.privacy}</p>
         </form>
       </div>
     </div>

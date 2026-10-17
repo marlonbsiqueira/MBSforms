@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { categories } from '@/lib/diagnosticData';
+import { localizeCategory } from '@/lib/diagnosticData.pt';
 import Logo from './ui/Logo';
 import { Lang, translations } from '@/lib/translations';
 
@@ -108,7 +109,7 @@ export default function CategorySelector({ onSelect, onBack, lang, onToggleLang 
           </button>
           <button
             onClick={onBack}
-            className="flex items-center gap-2 text-xs font-body text-gray-500 hover:text-gold transition-colors"
+            className="flex items-center gap-2 text-xs font-body text-gray-400 hover:text-gold transition-colors"
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M11 7H3M6 4L3 7l3 3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
@@ -144,13 +145,13 @@ export default function CategorySelector({ onSelect, onBack, lang, onToggleLang 
             <br />
             {T.categoryQuestion2}
           </h2>
-          <p className="text-sm font-body text-gray-500 max-w-md mx-auto leading-relaxed">{T.categorySubtitle}</p>
+          <p className="text-sm font-body text-gray-400 max-w-md mx-auto leading-relaxed">{T.categorySubtitle}</p>
         </div>
 
         <div className="gold-divider mb-12" />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {categories.map((cat, i) => (
+          {categories.map((c) => localizeCategory(c, lang)).map((cat, i) => (
             <button
               key={cat.id}
               onClick={() => onSelect(cat.id)}
@@ -183,7 +184,7 @@ export default function CategorySelector({ onSelect, onBack, lang, onToggleLang 
               >
                 {cat.label}
               </h3>
-              <p className="text-xs font-body text-gray-600 leading-snug">{cat.description}</p>
+              <p className="text-xs font-body text-gray-400/90 leading-snug">{cat.description}</p>
               <div
                 className="absolute bottom-5 right-5 transition-all duration-300"
                 style={{

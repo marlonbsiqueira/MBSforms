@@ -7,6 +7,7 @@ import QuestionFlow from '@/components/QuestionFlow';
 import LeadCaptureForm from '@/components/LeadCaptureForm';
 import { categories } from '@/lib/diagnosticData';
 import { generateReport, DiagnosticReport } from '@/lib/reportGenerator';
+import { localizeCategory } from '@/lib/diagnosticData.pt';
 import { Lang } from '@/lib/translations';
 
 type Step = 'landing' | 'category' | 'questions' | 'lead';
@@ -74,7 +75,7 @@ export default function Home() {
         <CategorySelector onSelect={handleCategorySelect} onBack={handleRestart} lang={lang} onToggleLang={toggleLang} />
       )}
       {step === 'questions' && selectedCategory && (
-        <QuestionFlow category={selectedCategory} onComplete={handleQuestionsComplete} onBack={() => setStep('category')} lang={lang} onToggleLang={toggleLang} />
+        <QuestionFlow category={localizeCategory(selectedCategory, lang)} onComplete={handleQuestionsComplete} onBack={() => setStep('category')} lang={lang} onToggleLang={toggleLang} />
       )}
       {step === 'lead' && report && (
         <LeadCaptureForm report={report} onRestart={handleRestart} lang={lang} onToggleLang={toggleLang} />
