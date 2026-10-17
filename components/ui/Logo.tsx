@@ -64,7 +64,7 @@ export default function Logo({ size = 'md', variant = 'full' }: LogoProps) {
               backgroundClip: 'text',
             }}
           >
-            MBSA
+            MBS
           </span>
           <span
             className={`${s.sub} font-body font-medium tracking-[0.2em] uppercase text-gray-400 leading-tight mt-0.5`}

@@ -24,21 +24,21 @@ const SITE_URL = 'https://marlonbsiqueira.github.io/MBSforms/';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: 'MBSA Advisory | Strategic Business Diagnostic',
+  title: 'MBS Advisory | Strategic Business Diagnostic',
   description:
     'AI-powered business diagnostic platform. Identify your company\'s real bottlenecks and unlock your next level of growth.',
   alternates: { canonical: SITE_URL },
   openGraph: {
-    title: 'MBSA Advisory | Strategic Business Diagnostic',
+    title: 'MBS Advisory | Strategic Business Diagnostic',
     description: 'Identify your company\'s real bottlenecks in under 5 minutes.',
     type: 'website',
     url: SITE_URL,
-    siteName: 'MBSA Advisory',
-    images: [{ url: `${SITE_URL}og-image.jpg`, width: 1200, height: 630, alt: 'MBSA Advisory — Strategic Business Diagnostic' }],
+    siteName: 'MBS Advisory',
+    images: [{ url: `${SITE_URL}og-image.jpg`, width: 1200, height: 630, alt: 'MBS Advisory — Strategic Business Diagnostic' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'MBSA Advisory | Strategic Business Diagnostic',
+    title: 'MBS Advisory | Strategic Business Diagnostic',
     description: 'Identify your company\'s real bottlenecks in under 5 minutes.',
     images: [`${SITE_URL}og-image.jpg`],
   },
