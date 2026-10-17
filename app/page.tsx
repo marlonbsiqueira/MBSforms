@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import LandingHero from '@/components/LandingHero';
 import CategorySelector from '@/components/CategorySelector';
 import QuestionFlow from '@/components/QuestionFlow';
@@ -16,6 +16,23 @@ export default function Home() {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [report, setReport] = useState<DiagnosticReport | null>(null);
   const [lang, setLang] = useState<Lang>('en');
+
+  // Language: ?lang=pt link > saved choice > browser language. Kept on <html lang>
+  // for screen readers and remembered for the next visit.
+  useEffect(() => {
+    let initial: Lang = navigator.language?.toLowerCase().startsWith('pt') ? 'pt' : 'en';
+    try {
+      const saved = localStorage.getItem('mbsDiagLang');
+      if (saved === 'en' || saved === 'pt') initial = saved;
+    } catch {}
+    const fromUrl = new URLSearchParams(window.location.search).get('lang');
+    if (fromUrl === 'en' || fromUrl === 'pt') initial = fromUrl;
+    setLang(initial);
+  }, []);
+  useEffect(() => {
+    document.documentElement.lang = lang;
+    try { localStorage.setItem('mbsDiagLang', lang); } catch {}
+  }, [lang]);
 
   const toggleLang = useCallback(() => setLang((l) => (l === 'en' ? 'pt' : 'en')), []);
   const handleStart = useCallback(() => setStep('category'), []);
@@ -40,6 +57,9 @@ export default function Home() {
     setReport(null);
     setStep('landing');
   }, []);
+
+  // Each step replaces the whole screen: start it at the top
+  useEffect(() => { window.scrollTo(0, 0); }, [step]);
 
   const selectedCategory = selectedCategoryId
     ? categories.find((c) => c.id === selectedCategoryId) ?? null

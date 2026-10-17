@@ -3,28 +3,37 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  pull_request:          # build-only check, so a broken change is caught before merging
+  workflow_dispatch:
 
 permissions:
   contents: write
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v5
         with:
-          node-version: 18
+          node-version: 22
+          cache: npm
 
-      - run: npm install
+      - run: npm ci
 
       - run: npm run build
 
       - name: Add .nojekyll
         run: touch out/.nojekyll
 
-      - uses: peaceiris/actions-gh-pages@v3
+      - name: Publish to gh-pages
+        if: github.event_name != 'pull_request'
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./out
