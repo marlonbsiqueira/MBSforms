@@ -38,7 +38,7 @@ export const translations = {
     successMsg: 'Your diagnostic has been sent to our team. We will contact you shortly with your personalized results and action plan.',
     anotherDiagnostic: 'Run another diagnostic',
     privacy: 'We respect your privacy. Your information will never be shared with third parties.',
-    errorMsg: 'Something went wrong. Please try again or contact us directly.',
+    errorMsg: 'Something went wrong. Please try again in a few minutes.',
     severity: { Low: 'Low Risk', Moderate: 'Moderate Risk', High: 'High Risk', Critical: 'Critical Risk' },
   },
   pt: {
@@ -78,7 +78,7 @@ export const translations = {
     successMsg: 'Seu diagnóstico foi enviado para nossa equipe. Entraremos em contato em breve com seus resultados personalizados e plano de ação.',
     anotherDiagnostic: 'Realizar outro diagnóstico',
     privacy: 'Respeitamos sua privacidade. Suas informações nunca serão compartilhadas com terceiros.',
-    errorMsg: 'Algo deu errado. Por favor, tente novamente ou entre em contato diretamente.',
+    errorMsg: 'Algo deu errado. Por favor, tente novamente em alguns minutos.',
     severity: { Low: 'Risco Baixo', Moderate: 'Risco Moderado', High: 'Risco Alto', Critical: 'Risco Crítico' },
   },
 };

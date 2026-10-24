@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { DiagnosticReport, getSeverityColor, getSeverityBg } from '@/lib/reportGenerator';
 import { Lang, translations } from '@/lib/translations';
-import { WEB3FORMS_ACCESS_KEY, CONTACT_EMAIL } from '@/lib/emailConfig';
+import { WEB3FORMS_ACCESS_KEY } from '@/lib/emailConfig';
 import { localizeCategory } from '@/lib/diagnosticData.pt';
 import Logo from './ui/Logo';
 
@@ -288,9 +288,6 @@ export default function LeadCaptureForm({ report, onRestart, lang, onToggleLang 
             {status === 'error' && (
               <div className="mt-3 text-center" role="alert">
                 <p className="text-xs text-red-400">{T.errorMsg}</p>
-                <a href={`mailto:${CONTACT_EMAIL}`} className="text-xs text-red-300 mt-1 underline underline-offset-2 inline-block">
-                  {CONTACT_EMAIL}
-                </a>
               </div>
             )}
           </div>
